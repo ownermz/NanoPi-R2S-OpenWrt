@@ -1,11 +1,10 @@
 ## R2S 基于原生OpenWRT 的固件(AS IS, NO WARRANTY!!!)
-![R2S-OpenWrt-Without-Docker](https://github.com/QiuSimons/R2S-OpenWrt/workflows/R2S-OpenWrt-Without-Docker/badge.svg)
+![NanoPi-R2S-OpenWrt](https://github.com/vgist/NanoPi-R2S-OpenWrt/workflows/NanoPi-R2S-OpenWrt/badge.svg)
+
+Fork 自 [QiuSimons/R2S-OpenWrt](https://github.com/QiuSimons/R2S-OpenWrt)，做了一些增减，个人自用。
 
 ### 下载地址：
-https://github.com/project-openwrt/R2S-OpenWrt/releases
-
-### 追新党可以在Action中取每日更新（可能会翻车，风险自担，需要登陆github后才能下载）：
-https://github.com/project-openwrt/R2S-OpenWrt/actions
+https://github.com/vgist/NanoPi-R2S-OpenWrt/releases
 
 ### 本地一键编译命令（注意装好依赖）：
 安装依赖：
@@ -17,12 +16,12 @@ wget -O - https://raw.githubusercontent.com/friendlyarm/build-env-on-ubuntu-bion
 ```
 一键编译（测试编译环境是Ubuntu18.04）：
 ```shell
-git clone https://github.com/project-openwrt/R2S-OpenWrt.git&&cd R2S-OpenWrt&&bash onekeyr2s.sh
+git clone https://github.com/vgist/NanoPi-R2S-OpenWrt.git && cd NanoPi-R2S-OpenWrt && bash onekeyr2s.sh
 ```
 ### 注意事项：
-0.OC至1.608GHz（未提升电压，原则上不会增加大量额外发热）
+0.OC至1.512GHz（未提升电压，原则上不会增加大量额外发热）
 
-1.登陆IP：192.168.1.1 密码：无
+1.登陆IP：192.168.2.1 密码：无
 
 2.OP内置升级可用
 

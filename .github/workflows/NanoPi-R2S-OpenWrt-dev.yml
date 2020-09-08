@@ -1,16 +1,17 @@
-name: R2S-OpenWrt-Without-Docker
+name: NanoPi-R2S-OpenWrt
 
 on:
+  push:
+    branches: [ master ]
+    paths:
+      - '.github/workflows/NanoPi-R2S-OpenWrt-dev.yml'
   schedule:
-    - cron: 5 9 * * *
-  watch:
-    types: started
+    - cron: '01 07 * * *'
 
 jobs:
   build:
     runs-on: ubuntu-18.04
-    if: github.event.repository.owner.id == github.event.sender.id
-    
+    if: github.repository == 'vgist/NanoPi-R2S-OpenWrt'
     steps:
     - name: Clone Repository
       uses: actions/checkout@v1
@@ -43,7 +44,7 @@ jobs:
         expire-in: 1days # Setting this to 0 will delete all artifacts
     - name: Prepare Mixedwrt
       run: |
-        sudo chown -R runner:runner /home/runner/work/R2S-OpenWrt
+        sudo chown -R runner:runner /home/runner/work/NanoPi-R2S-OpenWrt
         cp -r ./SCRIPTS/. ./
         /bin/bash 01_get_ready.sh
     - name: Prepare Package
@@ -66,7 +67,7 @@ jobs:
     - name: Make Config
       run: |
         cd openwrt
-        mv ../SEED/config_no_docker.seed .config
+        mv ../SEED/config.seed .config
         make defconfig
         chmod -R 755 ./
     - name: Make Download
@@ -99,10 +100,12 @@ jobs:
         rm -rf ./artifact/
         mkdir -p ./artifact/
         cp openwrt/bin/targets/rockchip/armv8/*squashfs-sysupgrade.img.gz ./artifact/
-        cd openwrt
+        cp openwrt/.config ./artifact/config.seed
+        cd artifact
+        shasum -a 256 *img.gz > sha256sum.txt
         cd ..
         zip -r artifact.zip ./artifact/
-        release_tag="R2S-GC404-$(date +%Y-%m-%d)"
+        release_tag="NanoPi-R2S-$(date +%Y-%m-%d)"
         echo "##[set-output name=release_tag;]$release_tag"
     - name: Upload Artifact
       uses: actions/upload-artifact@master
@@ -113,18 +116,18 @@ jobs:
       id: create_release
       uses: actions/create-release@v1
       env:
-        GITHUB_TOKEN: ${{ secrets.workflow_token }}
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-        tag_name: ${{ steps.assemble_artifact.outputs.release_tag }}
-        release_name: 自动发布 ${{ steps.assemble_artifact.outputs.release_tag }}
+        tag_name: ${{ steps.assemble_artifact.outputs.release_tag }}-dev
+        release_name: ${{ steps.assemble_artifact.outputs.release_tag }}-dev
         draft: false
-        prerelease: false
+        prerelease: true
 
     - name: Upload Release Asset
       id: upload-release-asset
       uses: actions/upload-release-asset@v1
       env:
-        GITHUB_TOKEN: ${{ secrets.workflow_token }}
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps
         asset_path: ./artifact.zip
